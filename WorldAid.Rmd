@@ -1,5 +1,5 @@
 ---
-title: "USAID_Mapping_Activity"
+title: "WorldAid_Activity"
 author: "YOUR NAME HERE"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
@@ -181,11 +181,11 @@ Try plotting the same map, but instead try changing the basemap to show the econ
 
 ```
 
-Part 1 gave you a very brief idea of how to work with the tmap datasets and the different mapping options available. We are now going to split into teams for each region of the world. 
+Part 1 gave you a very brief idea of how to work with the tmap datasets and the different mapping options available. We are now going to split into teams for each region of the world: "Asia", "Africa", "Europe", "South America", "Oceania", "North America".
 
 ### Part 2: Determining World Aid Recipients
 
-Our task for this tutorial is to determine the top 5 countries that should receive aid available through the World Aid NGO's 2020 funds - **$1 billion for Climate Mitigation**. To do this, you will be mapping different country-level data that has to do with country stability, disaster impacts, health and disease, population centers, land and land degradation types, food insecurity, etc. 
+Our task for this tutorial is to determine the top 5 countries that should receive aid available through the World Aid NGO's 2021 funds - **$1 billion for Climate Mitigation**. To do this, you will be mapping different country-level data that has to do with country stability, disaster impacts, health and disease, population centers, land and land degradation types, food insecurity, etc. 
 
 You have access to all of the datasets we explored above as well as a new dataset with random data from the World Bank, the UN's Sustainable Development Goals Reports, and the UN Environmental Statistics. First, we need to load the new dataset as a csv and look at the column names to determine what data is available.
 ```{r}
@@ -199,7 +199,7 @@ In order to link the data in more_data to the geometry data from World, we need 
 World_plus <- merge(World,more_data,by="name")
 ```
 
-Now that your data is ready to go, it is up to your region group to decide the best way to represent key pieces of the available data as evidence for including or excluding certain countries in US Aid. The first step is to subset the data to include only your region: "Asia", "Africa", "Europe", "South America", "Oceania", "North America".
+Now that your data is ready to go, it is up to your region group to decide the best way to represent key pieces of the available data as evidence for including or excluding certain countries in US Aid. The first step is to subset the data to include only your region.
 
 Change the variable below to your assigned world region to subset the World_plus dataset for only that part. 
 ```{r}
@@ -231,7 +231,7 @@ tm_shape(df) +
   tm_facets(sync = TRUE, ncol = 2)
 ```
 
-Now that you are rolling along, discuss with your region team how you will determine the top 5 countries to provide aid to in 2020 and how you will represent that data. A good strategy might be to individually explore the data with maps of your region and then collaboratively determine what seems to be the most pertinent data in your region. The data is not perfect and many countries have missing data. Your goal is to make a single map (or facetted map) that demonstrates your region's funding decision. 
+Now that you are rolling along, discuss with your region team how you will determine the top 5 countries to provide aid to in 2021 and how you will represent that data. One strategy might be to individually explore the data with maps of your region and then collaboratively determine what seems to be the most pertinent data in your region. The data is not perfect and many countries have missing data. Your goal is to make a single map (or facetted map) that demonstrates your region's funding decision. 
 
 YOUR CODE HERE:
 ```{r}
