@@ -1,0 +1,241 @@
+---
+title: "USAID_Mapping_Activity"
+author: "YOUR NAME HERE"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+This tutorial is based on the tmap tutorial at https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html, inspired by Dr. Nichole Barger's work on preventing desertification with the UN, and motivated by the University of Wyoming Capstone course by Rachel Watson (Fall 2020)
+
+## Set up
+
+Use getwd() and setwd() to set your working directory to the WorldAid Activity folder that was forked from GitHub.
+
+As an example, when I type getwd() in the **Console**, I get this:
+"/Users/SierraJech"
+
+But this is not where my class folder is located, so I have to use setwd() to change the path to my working directory like this: 
+setwd("/Users/SierraJech/Desktop/Colorado/RachelWatson/Capstone2020/Coding/WorldAid")
+
+Reminders:
+1) the green arrow on a code chunk will run the entire code chunk
+2) you can run one line at a time (on Mac use apple + enter)
+
+### Built-in R datasets
+
+R comes with many useful datasets that you can use. Many datasets are continuously updated and maintained by government agencies or international entities in an effort to make data FAIR (findable, accessible, interoperable, and reusable). One dataset that we will use is in the tmap package. Let's install tmap and then load the library. It will take a little while...
+
+```{r, echo=FALSE}
+if (!require(tmap)) install.packages('tmap')
+library(tmap)
+```
+
+The tmap package is the Thematic Map Visualization package which has multiple associated datasets that are maintained by over 20 contributors via a GitHub repo. Go to the tmap documentation https://cran.r-project.org/web/packages/tmap/tmap.pdf and click on the URL on page 1. You will be directed to the GitHub repo for this package where you can see who maintains this package and how often. You can also submit complaints (called Issues) there, find the citation that should be used for any publications, and tutorials. 
+
+### Explore the tmap data
+
+Let's load a few datasets. Notice that as you run this code, the data objects appear in your Environment Panel. Two of the datasets are ready to go as dataframes. The other, "land" is a list data type. 
+```{r}
+data("World", "land", "metro")
+```
+
+Let's explore the data contained in the World dataset
+
+```{r, echo=TRUE}
+#What type of object is it?
+class(World)
+
+#Is there any geospatial (geometry) data contained in World?
+names(World)
+```
+
+The World dataset is a Simple Features ("sf") object stored as a dataframe.
+The spatial data is housed in the 16th column of the dataframe called "geometry". The geometry data is in the form of a list of vertices which make a country's polygon.
+
+There are many other variables contained in the dataframe sourced from either naturalearthdata or happyplanetindex (http://happyplanetindex.org/about). Click on the spreadsheet icon in the Environment next to World to explore the data in table format.
+
+1. abbreviations for each country name (iso_a3)
+2. the full country name (name)
+3. sovereignt
+4. the continent for the country (continent)
+5. the country's area (area)
+6. a population estimate (pop_est)
+7. a population density estimate (pop_est_density)
+8. a categorical indicator for the economic status of the country (economy)
+9. a categorical indicator for the income of the country (income_grp)
+10. a GDP estimate (gdp_cap_est)
+
+11. average life expectancy from HPI (life_exp) - "Life expectancy: The average number of years a person is expected to live in each country based on data collected by the United Nations."
+12. well-being indicator from HPI (well_being) - "How satisfied the residents of each country say they feel with life overall, on a scale from zero to ten, based on data collected as part of the Gallup World Poll."
+13. footprint indicator from HPI (footprint) - "The average impact that each resident of a country places on the environment, based on data prepared by the Global Footprint Network. Ecological Footprint is expressed using a standardized unit: global hectares (gha) per person."
+14. an inequality indicator from HPI (inequality) - "Inequality of outcomes: The inequalities between people within a country, in terms of how long they live, and how happy they feel, based on the distribution in each country’s life expectancy and wellbeing data. Inequality of outcomes is expressed as a percentage."
+15. the Happy Planet Index value from HPI (HPI) - "calculated as (well-being * life expectancy * inequality) / footprint"
+16. the polygon geometry information (geometry)
+
+## Land
+
+The land data is slightly different
+```{r}
+class(land)
+names(land)
+```
+
+A stars datatype is raster data meaning that every pixel of the map has a value. This means that the data quality depends on the pixel size. This is time series data from 1950-2030 (forecasted) for land cover types, trees, and elevation!
+
+###So let's try some mapping across the entire globe
+
+
+We are going to start by mapping the Happy Planet Index values across the globe (higher numbers are happier).
+
+```{r}
+tm_shape(World) +
+  tm_polygons("HPI")
+```
+
+What do you notice about the distribution of wealthy countries and the happiness scores?
+
+I immediately notice that the United States and Canada have pretty low values. You can read about the case studies on the HPI website:
+http://happyplanetindex.org/countries/united-states-of-america
+
+Also, Mexico is doing really well (actually second in the world)
+http://happyplanetindex.org/countries/mexico
+
+## Interactive mapping
+
+This code makes an interactive plot where you can zoom and click on individual countries to get their exact scores. Note that some countries do not have a Happy Planet Index due to lack of one or more of the 4 variables used to calculate HPI.
+```{r}
+tmap_mode("view")
+tm_shape(World) +
+  tm_polygons("HPI") #Happy Planet Index
+```
+
+### Land characteristics
+
+Let's explore elevation data in "land". The first line of code below is used to turn off the interactive plotting. 
+```{r}
+tmap_mode("view") # tmap mode set to plotting instead of the interactive "view"
+
+#elevation data
+tm_shape(land) +
+  tm_raster("elevation", palette = terrain.colors(10)) +
+  tm_shape(World) +
+  tm_borders("white", lwd = .5) +
+  tm_text("iso_a3", size = "AREA") +
+  tm_layout(legend.outside = TRUE)
+```
+
+Now let's explore the land cover classes which include forest, cropland, wetland, bare areas, urban, snow/ice, and water
+
+```{r}
+#land cover classes
+tm_shape(land) + 
+  tm_raster(col = "cover_cls")
+```
+
+
+In this second example with land cover data, we add a legend title, country borders, and a color blind palette. Since we are working with both land and World datasets, this example shows you how to use tmap to pull from two separate dataframes which is an important skill. 
+```{r}
+tm_shape(land) + 
+  tm_raster(col = "cover_cls", 
+            title = "Global Land Cover Classes",
+            palette = ) +
+  tmap_style("col_blind") +
+  tm_legend(legend.position = c("left", "bottom")) +
+  tm_shape(World) +
+  tm_borders(col = "black") +
+  tm_layout(scale = .8, 
+            legend.position = c("left","bottom"))
+```
+
+
+Zoom in to the map and notice how large the pixel sizes are. There are many other sources online for higher resolution land cover classifications, but this is useful today in our tutorial because the mapping is fast. 
+
+One more...let's use some population data from the metro dataset and overlay that with the income group categories (from https://tlorusso.github.io/geodata_workshop/tmap_package). 
+
+First, calculate growth rates from the population data. To do this, we compare the population from 2010 and 2020:
+```{r}
+# Growth rates
+metro$growth <- (metro$pop2020 - metro$pop2010) / (metro$pop2010 * 10) * 100
+```
+
+When you run the code above, a new column appears in the metro dataframe called "growth", which is calculated from two other columns in that dataframe. Now you will plot it.  
+
+```{r}
+mapWorld <- tm_shape(World) +
+    tm_polygons("income_grp", palette="-Blues", contrast=.7, id="name", title="Income group") +
+    tm_shape(metro) +
+    tm_bubbles("pop2010", col = "growth", 
+               border.col = "black", border.alpha = .5, 
+               style="fixed", breaks=c(-Inf, seq(0, 6, by=2), Inf),
+               palette="-RdYlBu", contrast=1, 
+               title.size="Metro population", 
+               title.col="Growth rate (%)", id="name")
+
+mapWorld
+```
+
+The map above is quite complicated. The basemap shows the income group data from the World dataframe. On top of that, we have ploted the country geometries from the metro dataframe, overlayed with bubbles that represent the growth rates for metro areas that you calculated from the data. The bubbles are colored by the growth rate and the size of the bubble shows what the population was in 2010. 
+
+Try plotting the same map, but instead try changing the basemap to show the economy categories in shades of "-Greys" & make the bubble color show the predicted population for 2030 which is contained in the column called "pop2030"
+
+```{r}
+
+```
+
+Part 1 gave you a very brief idea of how to work with the tmap datasets and the different mapping options available. We are now going to split into teams for each region of the world. 
+
+### Part 2: Determining World Aid Recipients
+
+Our task for this tutorial is to determine the top 5 countries that should receive aid available through the World Aid NGO's 2020 funds - **$1 billion for Climate Mitigation**. To do this, you will be mapping different country-level data that has to do with country stability, disaster impacts, health and disease, population centers, land and land degradation types, food insecurity, etc. 
+
+You have access to all of the datasets we explored above as well as a new dataset with random data from the World Bank, the UN's Sustainable Development Goals Reports, and the UN Environmental Statistics. First, we need to load the new dataset as a csv and look at the column names to determine what data is available.
+```{r}
+more_data <- read.csv("more_data.csv")
+names(more_data)
+```
+
+In order to link the data in more_data to the geometry data from World, we need to merge the datasets. This is one of the many data wrangling steps that people do to organize their data and make it ready for visualization. We will merge data_more to the World dataframe matching the names of the countries. In both dataframes, the column that contains the country names is called "name":
+
+```{r}
+World_plus <- merge(World,more_data,by="name")
+```
+
+Now that your data is ready to go, it is up to your region group to decide the best way to represent key pieces of the available data as evidence for including or excluding certain countries in US Aid. The first step is to subset the data to include only your region: "Asia", "Africa", "Europe", "South America", "Oceania", "North America".
+
+Change the variable below to your assigned world region to subset the World_plus dataset for only that part. 
+```{r}
+region <- "Africa"
+```
+
+Now subset the World_plus dataframe for your region.
+```{r}
+df <- World_plus[ which(World_plus$continent == region), ]
+```
+
+Check that your subsetting worked and that the only continent in your new df object is your region.
+
+To get started, let's just make a basic map of your region
+
+```{r}
+tmap_mode("plot")
+tm_shape(df) +
+    tm_polygons("area") + 
+    tm_layout(legend.outside = TRUE)
+```
+
+The map above is colored by the size of the country. This is not particularly informative. Let's instead map the population density and the GDP estimates using facets which allow you to look at two maps side-by-side.
+
+```{r}
+tmap_mode("view")
+tm_shape(df) +
+  tm_polygons(c("pop_est_dens", "Percent.Pop.Severely.Food.Insecure")) +
+  tm_facets(sync = TRUE, ncol = 2)
+```
+
+Now that you are rolling along, discuss with your region team how you will determine the top 5 countries to provide aid to in 2020 and how you will represent that data. A good strategy might be to individually explore the data with maps of your region and then collaboratively determine what seems to be the most pertinent data in your region. The data is not perfect and many countries have missing data. Your goal is to make a single map (or facetted map) that demonstrates your region's funding decision. 
+
+YOUR CODE HERE:
+```{r}
+
+```
+
+When you have created a compelling map, open the app.shiny file located in the WorldAid folder. Keep this WorldAid.Rmd file open.
