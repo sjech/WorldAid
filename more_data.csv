@@ -1,4 +1,4 @@
-﻿name,drought2020,Confirmed,Recovered,Deaths,Agricultural production (Index Base: 2004-2006 = 100),Food production (Index Base: 2004-2006 = 100),urban popuation (% of total),individuals using the internet (per 100),Percent Pop Severely Food Insecure,Percent Pop Moderate Food Insecure,Percent Pop Basic Sanitation,Percent Pop Basic Drinking Water,Percent Pop Below International Poverty Line,Number of People Affected by Disaster since 2005,Proportion land area that is degraded over total land area,"Tuberculosis Incidence per 100,000","Malaria Incidence per 1,000","Death Rate Attributable to Air Pollution per 100,000"
+﻿name,drought2020,covidConfirmed,covidRecovered,covidDeaths,ag,food,urban,internet,severe_food_insecure,moderate_food_insecure,sanitation,water,poverty,disaster,land_deg,tuberculosis,malaria,death_air_pollution
 Afghanistan,2.5,37599,27166,1375,125.4,125.4,25.5,11.4,22.7,60.8,43.4,67.1,,645670,8,189,29,49
 Albania,,7654,3871,232,143.4,143.9,60.3,71.8,10,37.1,97.7,91,2,175935,8,18,,63
 Algeria,,39444,27653,1391,151.5,151.7,72.6,47.7,9.3,17.6,87.6,93.6,,,1,69,0,35
